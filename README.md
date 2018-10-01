@@ -1,9 +1,16 @@
 # PlusORM
 ## A Simple C++ Object Relational MAP
+### Features
+- simple and intuitive interface
+- support for C++98 to be compatible with old embedded toolchains
+- automatic code generation
 
+### Notice
+The project is still naive it currently support operations on distinct tables no join implemented yet.
+As Donald Knuth stated premature optimization is the root of all evil, so nothing is optimized yet.
+
+## Tutorial & Usage 
 The following code show how simple we can interact with database using this ORM
-
-## Usage 
 ### Example Table Schema
 assume we have table named `Person` with following sql schema
 
