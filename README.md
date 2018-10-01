@@ -3,7 +3,7 @@
 
 The following code show how simple we can interact with database using this ORM
 
-
+## Usage 
 ### Example Table Schema
 assume we have table named `Person` with following sql schema
 
@@ -44,7 +44,7 @@ int main(int argc, char **argv) {
 
 	std::cout << model->Count() << std::endl;        // Number of Person table row in DB
 
-  john->SetAge(34);                                // change the Person object
+	john->SetAge(34);                                // change the Person object
 	model->Update(john);                             // Update the DB
 
 	model->Drop();                                   // Drom Person table in DB, if you wish
@@ -53,4 +53,31 @@ int main(int argc, char **argv) {
 	std::cout << "Finish" << std::endl;
 	return 0;
 }
+```
+
+## Building 
+PlusORM has standard Makefile in the root folder of the project optimized for use in embedded environment by the help of shell script
+### X86 Environment
+extract the project in your local directory and issue following commands
+
+```sh
+# first cd to project directory
+cd PlusORM
+# then build the library with this command
+./build.sh
+# test the library with this command
+./build.sh test
+# issue this one to clean the projcet
+./build.sh clean
+```
+### Cross Compilation
+The Makefile of the project is witten in the way to facilitate the cross compilation for embedded environment. To cross compile the project use the x86.mk file in the root folder as a template and rename it to something meaningful, insert the toolchain path and any required library and any architecture specific flags required, then issue following commands
+
+```sh
+# assume we have created arm-linux-gnueabihf.mk
+./build.sh arm-linux-gnueabihf.mk
+# issue this one to clean the projcet
+./build.sh clean
+```
+the PlusORM library along with sqlite and utils will be created as dynamic link library (.so) for your target platform, and you can add them to your project.
 
