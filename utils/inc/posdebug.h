@@ -12,21 +12,20 @@
 #endif 
 
 #ifndef posDebug
-	#ifdef POS_DEBUG
-		#ifdef HWX86QT
-			#include <QDebug>
-			#define posDebug(args...) qDebug(args)
-		#else
-	// __VA_ARGV__
-			#include <stdio.h>
-			#define posDebug(args...) printf(args)
-		#endif
-	#else // DEBUG
 		#define posDebug(args...) MyPosDebug(args)
-	#endif // DEBUG
 #endif //#ifndef debugf
 
+#ifdef __cplusplus
+        extern "C" {
+#endif
+
 void MyPosDebug(const char* format, ...);
+int OpenLog();
+int CloseLog();
+
+#ifdef __cplusplus
+        };
+#endif
 
 #endif //_POS_DEBUG_H
 

@@ -23,10 +23,11 @@ protected:
 	unsigned long id;
 public:
 	//ObjectMap(){id=0;}
-	virtual ~ObjectMap(){}
 	ObjectMap(ObjectMap& x);
 	ObjectMap(unsigned long xid);
 	ObjectMap(std::string tableName);
+	virtual ~ObjectMap(){};
+
 	ObjectMap& operator= (ObjectMap& x);
 	ObjectMap& operator= (unsigned long xid);
 	ObjectMap& operator= (std::string tableName);
@@ -42,34 +43,34 @@ public:
 template <typename T>
 class ORM {
 	static pthread_mutex_t mutex;
-	static ORM* volatile instance;
+	static ORM* instance;
 	std::list<T*> resultlist;
 	DatabaseAbstract* db;
     ORM<T>();
     ~ORM<T>();
 	void ClearResultList();
 public:
-	static ORM* volatile GetInstance();
+	static ORM* GetInstance();
 	static bool RemoveInstance();
-	bool Status() const {return db->Status();}
+	bool Status(){return db->Status();}
 	bool Create();
 	bool Drop();
 	bool Insert(const T& x);
-	bool Insert(const std::list<T*>& list);
-	bool Search(std::string elements="*", std::string condition = "1==1");
+	bool Insert(std::list<T*>& list);
+	bool Search(const std::string& elements="*", const std::string& condition = "1==1");
 	bool Update(const T& x);
-	bool Update(const std::list<T*>& list);
+	bool Update(std::list<T*>& list);
 	bool Remove(const T& x);
-	bool Remove(std::string condition);
-	unsigned long Count(std::string elements, std::string condition) const;
-	unsigned long Count() const;
-	unsigned long MaxPrimaryKey() const;
-	const std::list<T*>& GetResultList() const { return resultlist;}
+	bool Remove(const std::string& condition);
+	unsigned long Count(const std::string& elements, const std::string& condition);
+	unsigned long Count();
+	unsigned long MaxPrimaryKey();
+	std::list<T*> const& GetResultList() const {	return resultlist;}
 
 };
 
 template <typename T>
-ORM<T>* volatile ORM<T>::instance = nullptr;
+ORM<T>* ORM<T>::instance = nullptr;
 
 template <typename T>
 pthread_mutex_t ORM<T>::mutex = PTHREAD_MUTEX_INITIALIZER;
@@ -82,37 +83,24 @@ ORM<T>::ORM(){
 }
 template <typename T>
 ORM<T>::~ORM(){
-	posDebug("ORM<T>::~ORM()\n");
 	ClearResultList();
 	DBFactory::Disconnect(db);
 }
 
 template <typename T>
-ORM<T>* volatile ORM<T>::GetInstance(){
-	posDebug("ORM<T>::GetInstance()\n");
+ORM<T>* ORM<T>::GetInstance(){
+	posDebug("GetInstance\n");
 	if(instance == nullptr){
-		pthread_mutex_lock(&mutex);
-		if(instance == nullptr){
-			posDebug(" new ORM<T>()\n");
-			ORM<T>* volatile temp = new ORM<T>();
-			instance = temp;
-		}
-		pthread_mutex_unlock(&mutex);
+		instance = new ORM<T>();
 	}
 	return instance;
 }
 
 template <typename T>
 bool ORM<T>::RemoveInstance(){
-	posDebug("ORM<T>::RemoveInstance()\n");
 	if(instance != nullptr){
-		pthread_mutex_lock(&mutex);
-		if(instance != nullptr){
-			posDebug(" delete 	instance\n");
-			delete 	instance;
-			instance = nullptr;
-		}
-		pthread_mutex_unlock(&mutex);
+		delete 	instance;
+		instance = nullptr;
 	}
 	return (instance == nullptr);
 }
@@ -139,15 +127,15 @@ template <typename T>
 bool ORM<T>::Drop(){
 	return db->Drop(T::GetTableName());
 }
+
 template <typename T>
 bool ORM<T>::Insert(const T& x){
 	std::map<std::string,std::string> hashmap;
 	x.GetMap(hashmap);
 	return db->Insert(T::GetTableName(),hashmap);
 }
-
 template <typename T>
-bool ORM<T>::Insert(const std::list<T*>& list){
+bool ORM<T>::Insert(std::list<T*>& list){
 	bool ret=false;
 	for(typename std::list<T*>::iterator it=list.begin(); it != list.end(); it++){
 		ret=Insert(*(*it));
@@ -158,11 +146,12 @@ template <typename T>
 bool ORM<T>::Update(const T& x){
 	std::map<std::string,std::string> hashmap;
 	x.GetMap(hashmap);
+//	std::string condition="id == "+hashmap["id"];
 	std::string condition=T::GetPrimaryKeyString()+" == "+x.GetPrimaryValueString();
 	return db->Update(T::GetTableName(),hashmap,condition);
 }
 template <typename T>
-bool ORM<T>::Update(const std::list<T*>& list){
+bool ORM<T>::Update(std::list<T*>& list){
 	bool ret=false;
 	for(typename std::list<T*>::iterator it=list.begin(); it != list.end(); it++){
 		ret=Update(*(*it));
@@ -173,17 +162,18 @@ template <typename T>
 bool ORM<T>::Remove(const T& x){
 	std::map<std::string,std::string> hashmap;
 	x.GetMap(hashmap);
+//	std::string condition="id == "+hashmap["id"];
 	std::string condition=T::GetPrimaryKeyString()+" == "+x.GetPrimaryValueString();
 	return db->Remove(T::GetTableName(), condition);
 }
 
 template <typename T>
-bool ORM<T>::Remove(std::string condition){
+bool ORM<T>::Remove(const std::string& condition){
 	return db->Remove(T::GetTableName(), condition);
 }
 
 template <typename T>
-bool ORM<T>::Search(std::string elements, std::string condition) {
+bool ORM<T>::Search(const std::string& elements, const std::string& condition){
 	bool ret=false;
 	ResultSet rows;
 	ret = db->Select(T::GetTableName(),elements,condition,rows);
@@ -198,7 +188,7 @@ bool ORM<T>::Search(std::string elements, std::string condition) {
 }
 
 template <typename T>
-unsigned long ORM<T>::Count(std::string elements, std::string condition) const {
+unsigned long ORM<T>::Count(const std::string& elements, const std::string& condition){
 	ResultSet rows;
 	db->Select(T::GetTableName(),elements,condition,rows);
 	Row* row=rows.front();
@@ -207,12 +197,13 @@ unsigned long ORM<T>::Count(std::string elements, std::string condition) const {
 }
 
 template <typename T>
-unsigned long ORM<T>::Count() const {
+unsigned long ORM<T>::Count(){
 	return Count("Count(*)","1 == 1");
 }
 
+
 template <typename T>
-unsigned long ORM<T>::MaxPrimaryKey() const {
+unsigned long ORM<T>::MaxPrimaryKey(){
 	std::string element="MAX(`"+T::GetPrimaryKeyString()+"`)";
 	return Count(element,"1 == 1");
 }

@@ -1,7 +1,7 @@
 #include "orm.h"
+#include "debug.h"
 
 using namespace PlusORM;
-
 std::map<std::string,unsigned long> ObjectMap::tableMap;
 
 //ObjectMap(){id=0;}
@@ -13,7 +13,7 @@ ObjectMap::ObjectMap(unsigned long xid){
 }
 ObjectMap::ObjectMap(std::string tableName){
 	id=tableMap[tableName]++;
-	posDebug("ObjectMap::ObjectMap() tableMap[ %s ]: %lu\n",tableName.c_str(),id);
+	posDebug("#910 ObjectMap::ObjectMap() tableMap[ %s ]: %d\n",tableName.c_str(),id);
 }
 ObjectMap& ObjectMap::operator= (ObjectMap& x) {
 	id=x.id;
@@ -25,7 +25,7 @@ ObjectMap& ObjectMap::operator= (unsigned long xid) {
 }
 ObjectMap& ObjectMap::operator= (std::string tableName){
 	id=tableMap[tableName]++;
-	posDebug("ObjectMap::operator=() tableMap[ %s ]: %lu\n",tableName.c_str(),id);
+	posDebug("#910 ObjectMap::operator=() tableMap[ %s ]: %d\n",tableName.c_str(),id);
 	return *this;
 }
 
