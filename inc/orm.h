@@ -23,15 +23,15 @@ protected:
 	unsigned long id;
 public:
 	//ObjectMap(){id=0;}
-	ObjectMap(ObjectMap& x);
+	ObjectMap(const ObjectMap& x);
 	ObjectMap(unsigned long xid);
-	ObjectMap(std::string tableName);
+	ObjectMap(const std::string& tableName);
 	virtual ~ObjectMap(){};
 
-	ObjectMap& operator= (ObjectMap& x);
+	ObjectMap& operator= (const ObjectMap& x);
 	ObjectMap& operator= (unsigned long xid);
-	ObjectMap& operator= (std::string tableName);
-	static void Initialize(std::string tableName,unsigned long maxid);
+	ObjectMap& operator= (const std::string& tableName);
+	static void Initialize(const std::string& tableName,unsigned long maxid);
 	//static std::string GetPrimaryKeyString();
 	//static std::string GetTableName();
 	inline virtual void SetMap(std::map<std::string,std::string> &hashmap ) = 0 ;
