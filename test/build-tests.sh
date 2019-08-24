@@ -20,7 +20,7 @@ fi
 #g++ -g -O0 -Wall  -o test.d gtest1.o  -L. -L.. -Wl,-rpath,../ -Wl,--start-group -lorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
 
 ../script/GendbInterface.pl < person.sql > person.h
-g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC gtest1.cpp -o gtest1 -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
+g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC gtest1.cpp -o gtest1 -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lutils -lsqlite3.24 -lplusorm -lgtest -lpthread -ldl  -Wl,--end-group
 
 #for Cygwin use this line
 #cp ../*.so ./

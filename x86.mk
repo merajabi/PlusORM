@@ -40,5 +40,5 @@ OPTIMISATION 	:= -g -O0 -Wall
 CFLAG			:= -MMD $(OPTIMISATION) $(ARCHFLAGS)
 CXXFLAG			:= -MMD $(OPTIMISATION) $(ARCHFLAGS)
 LDFLAG			:= $(OPTIMISATION) $(ARCHFLAGS)
-LDLIBFLAG		:= -Wl,-rpath,../lib
+LDLIBFLAG		:= -Wl,-rpath,.:./lib:..:../lib
 
