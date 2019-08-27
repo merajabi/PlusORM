@@ -1,12 +1,12 @@
-#include <thread>
 #include <iostream>
+#include "thread.h"
 #include "mutex.h"
 #include "atomic.h"
 
 ModernCPP::Mutex m;
 ModernCPP::Atomic<unsigned long> counter(0);
 
-void inc() {
+int inc(std::string x) {
 	while(1){
 		unsigned long tmp = counter.Load();
 		if(tmp<10000ul) {
@@ -16,25 +16,46 @@ void inc() {
 				tmp++;
 				counter.Store(tmp);
 			}
-		}else{
+		} else {
 			break;
 		}
 	}
+	return 0;
 }
 
+class Test {
+	public:
+	void operator () (){
+		inc("1");
+	}
+};
+
+/*
 int main() {
-    std::thread t1(inc);
-    std::thread t2(inc);
-    std::thread t3(inc);
-    std::thread t4(inc);
-    std::thread t5(inc);
+	Test obj;
+	void (*fp)(int) = inc;
+	ModernCPP::Thread<Test&> t1(obj);
+    ModernCPP::Thread<void(*)(int),int> t2(inc,5);
+    ModernCPP::Thread<typeof(fp),int> t3(fp,5);		// only with gnu++98
+    t3.Join();
+    t2.Join();
+    t1.Join();
 
-    t5.join();
-    t4.join();
-    t3.join();
-    t2.join();
-    t1.join();
+    std::cout<<counter<<std::endl;
+}
+*/
 
+int main() {
+	Test obj;
+	int (*fp)(std::string) = inc;
+	{
+		ModernCPP::Thread t1(obj);
+		ModernCPP::Thread t2(inc,"5");
+		ModernCPP::Thread t3(fp,"5");
+		//t3.Join();
+		//t2.Join();
+		//t1.Join();
+	}
     std::cout<<counter<<std::endl;
 }
 
