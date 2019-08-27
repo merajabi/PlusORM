@@ -16,7 +16,7 @@ void inc(int x) {
 				tmp++;
 				counter.Store(tmp);
 			}
-		}else{
+		} else {
 			break;
 		}
 	}

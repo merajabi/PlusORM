@@ -20,8 +20,10 @@ namespace ModernCPP {
 			void Join(){
 				pthread_join( threadId, NULL);
 			}
+			void Detach() {
+				pthread_detach(threadId);
+			}
 			static void *function(void *data){
-				
 				((ThreadData*)data)->func( ((ThreadData*)data)->param );
 			}
 	};
