@@ -9,10 +9,10 @@ ModernCPP::Atomic<unsigned long> counter(0);
 void inc() {
 	while(1){
 		unsigned long tmp = counter.Load();
-		if(tmp<1000ul) {
+		if(tmp<10000ul) {
 			ModernCPP::LockGuard lk(m);
 			tmp = counter.Load();
-			if(tmp<1000ul){
+			if(tmp<10000ul){
 				tmp++;
 				counter.Store(tmp);
 			}
