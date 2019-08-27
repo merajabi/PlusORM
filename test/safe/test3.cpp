@@ -6,7 +6,7 @@
 ModernCPP::Mutex m;
 ModernCPP::Atomic<unsigned long> counter(0);
 
-void inc(int x) {
+int inc(std::string x) {
 	while(1){
 		unsigned long tmp = counter.Load();
 		if(tmp<10000ul) {
@@ -20,15 +20,17 @@ void inc(int x) {
 			break;
 		}
 	}
+	return 0;
 }
 
 class Test {
 	public:
 	void operator () (){
-		inc(1);
+		inc("1");
 	}
 };
 
+/*
 int main() {
 	Test obj;
 	void (*fp)(int) = inc;
@@ -39,6 +41,21 @@ int main() {
     t2.Join();
     t1.Join();
 
+    std::cout<<counter<<std::endl;
+}
+*/
+
+int main() {
+	Test obj;
+	int (*fp)(std::string) = inc;
+	{
+		ModernCPP::Thread t1(obj);
+		ModernCPP::Thread t2(inc,"5");
+		ModernCPP::Thread t3(fp,"5");
+		//t3.Join();
+		//t2.Join();
+		//t1.Join();
+	}
     std::cout<<counter<<std::endl;
 }
 
