@@ -7,11 +7,11 @@
 #include <string>
 #include <map>
 #include <list>
-#include <pthread.h>
 
 #include "debug.h"
 #include "resultset.h"
 #include "database.h"
+#include "ModernCPP/include/ModernCPP.h"
 
 namespace PlusORM {
 
@@ -42,8 +42,8 @@ public:
 
 template <typename T>
 class ORM {
-	static pthread_mutex_t mutex;
-	static ORM* instance;
+	static mutex m;
+	static atomic<ORM<T>*> instance;
 	std::list<T*> resultlist;
 	DatabaseAbstract* db;
     ORM<T>();
@@ -70,10 +70,10 @@ public:
 };
 
 template <typename T>
-ORM<T>* ORM<T>::instance = nullptr;
+atomic<ORM<T>*> ORM<T>::instance = nullptr;
 
 template <typename T>
-pthread_mutex_t ORM<T>::mutex = PTHREAD_MUTEX_INITIALIZER;
+mutex ORM<T>::m;
 
 template <typename T>
 ORM<T>::ORM(){
@@ -91,15 +91,21 @@ template <typename T>
 ORM<T>* ORM<T>::GetInstance(){
 	posDebug("GetInstance\n");
 	if(instance == nullptr){
-		instance = new ORM<T>();
+		lock_guard<mutex> lk(m);
+		if(instance == nullptr){
+			ORM<T>* tmp = new ORM<T>();
+			instance = tmp;
+		}
 	}
 	return instance;
 }
 
 template <typename T>
 bool ORM<T>::RemoveInstance(){
+	lock_guard<mutex> lk(m);
 	if(instance != nullptr){
-		delete 	instance;
+		ORM<T>* tmp = instance;
+		delete 	tmp;
 		instance = nullptr;
 	}
 	return (instance == nullptr);
@@ -134,6 +140,7 @@ bool ORM<T>::Insert(const T& x){
 	x.GetMap(hashmap);
 	return db->Insert(T::GetTableName(),hashmap);
 }
+
 template <typename T>
 bool ORM<T>::Insert(std::list<T*>& list){
 	bool ret=false;
@@ -142,6 +149,7 @@ bool ORM<T>::Insert(std::list<T*>& list){
 	}
 	return ret;
 }
+
 template <typename T>
 bool ORM<T>::Update(const T& x){
 	std::map<std::string,std::string> hashmap;
@@ -158,6 +166,7 @@ bool ORM<T>::Update(std::list<T*>& list){
 	}
 	return ret;
 }
+
 template <typename T>
 bool ORM<T>::Remove(const T& x){
 	std::map<std::string,std::string> hashmap;
@@ -200,7 +209,6 @@ template <typename T>
 unsigned long ORM<T>::Count(){
 	return Count("Count(*)","1 == 1");
 }
-
 
 template <typename T>
 unsigned long ORM<T>::MaxPrimaryKey(){
