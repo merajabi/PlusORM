@@ -1,3 +1,6 @@
 [submodule "ModernCPP"]
 	path = ModernCPP
 	url = https://github.com/merajabi/ModernCPP
+[submodule "googletest"]
+	path = googletest
+	url = https://github.com/google/googletest

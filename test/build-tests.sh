@@ -1,6 +1,8 @@
 GTEST_DIR="../googletest/googletest";
 GMOCK_DIR="../googletest/googlemock";
 
+# googletest 1.8.x is the last release supporting pre-C++11 compilers.
+# cd googletest; git checkout 2fe3bd9 
 #${GMOCK_DIR}/scripts/generator/gmock_gen.py turtle.h   
 
 if [ ! -f ./libgtest.a ] 
