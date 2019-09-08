@@ -142,6 +142,7 @@ namespace {
 		//petter.SetAge(56);
 		ASSERT_TRUE(model->Update(petter));
 	}
+
 //	};									// comment for gtest
 
 };
