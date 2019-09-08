@@ -7,9 +7,15 @@ namespace PlusORM {
 		private:
 		std::string First;std::string Last;long Age;
 		public:
-		inline static void Initialize(unsigned long maxid){ObjectMap::Initialize(GetTableName(),maxid);}
-		inline static std::string GetTableName() { return "Person";	};
-		inline static std::string GetPrimaryKeyString() { return "id"; }
+		inline static void Initialize(ORM* model){
+			std::map<std::string,std::string> hashmap;
+			CreateTable(hashmap);
+			model->Create(GetTableName(), hashmap);
+			unsigned long maxid = model->MaxPrimaryKey(GetPrimaryKeyString());
+			ObjectMap::Initialize(GetTableName(),maxid);
+		}
+		std::string GetTableName() const { return "Person";	};
+		std::string GetPrimaryKeyString() const { return "id"; }
 		inline static void CreateTable(std::map<std::string,std::string> &hashmap){hashmap["id"]= "  INTEGER PRIMARY KEY NOT NULL ";hashmap["First"]= "  VARCHAR(128) NOT NULL ";hashmap["Last"]= "  VARCHAR(128) NOT NULL ";hashmap["Age"]= "  INTEGER ";}
 		Person():ObjectMap(GetTableName()) {}
 		Person(std::string First_,std::string Last_,long Age_):ObjectMap(GetTableName()){First=First_;Last=Last_;Age=Age_;}

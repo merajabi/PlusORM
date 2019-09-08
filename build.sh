@@ -5,7 +5,7 @@ if [ ! -z "$1" ]
 then
 	TARGET=$1;
 fi
-
+# git submodule update --init
 if [ "$TARGET" = "X86" ]
 then
 	make dynamiclib ARCHITECTURE="$ROOTFOLDER/x86.mk" MANAGER="$ROOTFOLDER/makefile.mk" BUILD="sqlite3.24"; > out.txt 2>&1

@@ -7,8 +7,8 @@ using namespace PlusORM;
 int main(int argc, char **argv) {
 
 	{
-		ORM<Person>* model = ORM<Person>::GetInstance(); // Get an instance of ORM 
-		Person::Initialize(model->MaxPrimaryKey());      // Initialize Person (sync with db)
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
+		Person::Initialize(model);      // Initialize Person (sync with db)
 
 		Person john ("John", "Doe", 33);                 // Create new Person object
 
@@ -20,10 +20,10 @@ int main(int argc, char **argv) {
 		model->Update(john);                             // Update the DB
 	}
 	{
-		ORM<Person>* model = ORM<Person>::GetInstance(); // Get an instance of ORM 
-		Person::Initialize(model->MaxPrimaryKey());      // Initialize Person (sync with db)
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
+		Person::Initialize(model);      // Initialize Person (sync with db)
 
-		model->Search("*","Age > 30");					 // Search persons with Age > 30
+		model->Search(Person::GetTableName(),"*","Age > 30");					 // Search persons with Age > 30
 		const std::list<Person*> list=model->GetResultList();
 		for(std::list<Person*>::const_iterator it=list.begin(); it != list.end(); ++it){
 			Person* ptr = *it;
@@ -32,7 +32,7 @@ int main(int argc, char **argv) {
 		//model->Drop();                                   // Drom Person table in DB, if you wish
 	}
 
-	ORM<Person>::RemoveInstance();                   // Remove ORM instance, just at the end of program.
+	ORM::RemoveInstance();                   // Remove ORM instance, just at the end of program.
 	std::cout << "Finish" << std::endl;
 	return 0;
 }
