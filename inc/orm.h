@@ -19,25 +19,34 @@ namespace PlusORM {
 
 	class ObjectMap {
 	protected:
+		std::map<std::string,std::string> obj; 
 		static std::map<std::string,unsigned long> tableMap;
-		unsigned long id;
+		//unsigned long id;
 	public:
 		//ObjectMap(){id=0;}
 		ObjectMap(const ObjectMap& x);
 		ObjectMap(unsigned long xid);
 		ObjectMap(const std::string& tableName);
+		ObjectMap(std::map<std::string,std::string> &hashmap );
 		virtual ~ObjectMap(){};
 
 		ObjectMap& operator= (const ObjectMap& x);
-		ObjectMap& operator= (unsigned long xid);
+		//ObjectMap& operator= (unsigned long xid);
 		ObjectMap& operator= (const std::string& tableName);
-		static void Initialize(const std::string& tableName,unsigned long maxid);
-		virtual std::string GetPrimaryKeyString() const =0;
-		virtual std::string GetTableName() const =0;
-		virtual void SetMap(std::map<std::string,std::string> &hashmap ) = 0 ;
-		virtual void GetMap(std::map<std::string,std::string> &hashmap ) const = 0;
 
-		std::string GetPrimaryValueString() const { return toString<unsigned long>(id); }
+		virtual std::string GetTableNameString() const {return "";};
+		virtual std::string GetPrimaryKeyString() const {return "";};
+
+		virtual void SetMap(std::map<std::string,std::string> &hashmap ) {obj.insert(hashmap.begin(),hashmap.end());} ;
+		virtual void GetMap(std::map<std::string,std::string> &hashmap ) const {hashmap.insert(obj.begin(),obj.end());};
+		
+		std::string GetPrimaryValueString() const { return Get("id");/*toString<unsigned long>(id);*/ }
+		std::string Get(const std::string& key) const {
+			std::map<std::string,std::string>::const_iterator it = obj.find(key);
+			return ((it!=obj.end())?it->second:"NULL");
+		}
+
+		static void Initialize(const std::string& tableName,unsigned long maxid);
 	};
 
 	class ORM {
@@ -126,7 +135,7 @@ namespace PlusORM {
 	bool ORM::Insert(const ObjectMap& x){
 		std::map<std::string,std::string> hashmap;
 		x.GetMap(hashmap);
-		return db->Insert(x.GetTableName(),hashmap);
+		return db->Insert(x.GetTableNameString(),hashmap);
 	}
 
 	bool ORM::Insert(std::list<ObjectMap*>& list){
@@ -142,7 +151,7 @@ namespace PlusORM {
 		x.GetMap(hashmap);
 	//	std::string condition="id == "+hashmap["id"];
 		std::string condition=x.GetPrimaryKeyString()+" == "+x.GetPrimaryValueString();
-		return db->Update(x.GetTableName(),hashmap,condition);
+		return db->Update(x.GetTableNameString(),hashmap,condition);
 	}
 
 	bool ORM::Update(std::list<ObjectMap*>& list){
@@ -158,7 +167,7 @@ namespace PlusORM {
 		x.GetMap(hashmap);
 	//	std::string condition="id == "+hashmap["id"];
 		std::string condition=x.GetPrimaryKeyString()+" == "+x.GetPrimaryValueString();
-		return db->Remove(x.GetTableName(), condition);
+		return db->Remove(x.GetTableNameString(), condition);
 	}
 
 
@@ -166,7 +175,7 @@ namespace PlusORM {
 		return db->Remove(tableName, condition);
 	}
 
-/*
+
 	bool ORM::Search(const std::string& tableName, const std::string& elements, const std::string& condition){
 		bool ret=false;
 		ResultSet rows;
@@ -180,7 +189,7 @@ namespace PlusORM {
 		}
 		return ret;
 	}
-*/
+
 
 	unsigned long ORM::Count(const std::string& tableName, const std::string& elements, const std::string& condition){
 		ResultSet rows;

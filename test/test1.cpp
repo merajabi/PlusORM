@@ -8,28 +8,35 @@ int main(int argc, char **argv) {
 
 	{
 		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
-		Person::Initialize(model);      // Initialize Person (sync with db)
+		Person::Initialize();      // Initialize Person (sync with db)
 
 		Person john ("John", "Doe", 33);                 // Create new Person object
 
 		model->Insert(john);                             // Insert object in DB
 
-		std::cout << model->Count() << std::endl;        // Number of Person table row in DB
+		std::cout << model->Count(Person::GetTableName()) << std::endl;        // Number of Person table row in DB
 
 		john.SetAge(34);                                // change the Person object
 		model->Update(john);                             // Update the DB
 	}
 	{
 		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
-		Person::Initialize(model);      // Initialize Person (sync with db)
+		Person::Initialize();      // Initialize Person (sync with db)
 
-		model->Search(Person::GetTableName(),"*","Age > 30");					 // Search persons with Age > 30
-		const std::list<Person*> list=model->GetResultList();
-		for(std::list<Person*>::const_iterator it=list.begin(); it != list.end(); ++it){
-			Person* ptr = *it;
-			std::cout << ptr->GetId() << "\t" << ptr->GetFirst() << "\t" << ptr->GetLast() << "\t" << ptr->GetAge () << std::endl;
+		Person Jenni ("Jenni", "White", 23);                 // Create new Person object
+		model->Insert(Jenni);                             // Insert object in DB
+		std::cout << model->Count(Person::GetTableName()) << std::endl;        // Number of Person table row in DB
+
+		model->Search(Person::GetTableName(),"*","Age > 20");					 // Search persons with Age > 30
+		const std::list<ObjectMap*> list=model->GetResultList();
+		for(std::list<ObjectMap*>::const_iterator it=list.begin(); it != list.end(); ++it){
+			Person ptr(*(*it));
+			std::cout << ptr.GetId() << "\t" << ptr.GetFirst() << "\t" << ptr.GetLast() << "\t" << ptr.GetAge () << std::endl;
+
+			std::cout << Person::GetId(*(*it)) << "\t" << Person::GetFirst(*(*it)) << "\t" << Person::GetLast(*(*it)) << "\t" << Person::GetAge (*(*it)) << std::endl;
 		}
-		//model->Drop();                                   // Drom Person table in DB, if you wish
+
+		model->Drop(Person::GetTableName());                                   // Drom Person table in DB, if you wish
 	}
 
 	ORM::RemoveInstance();                   // Remove ORM instance, just at the end of program.

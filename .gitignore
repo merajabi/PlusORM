@@ -4,6 +4,7 @@ libso/
 temp/
 # Prerequisites
 *.d
+*.db
 
 # Compiled Object files
 *.slo
