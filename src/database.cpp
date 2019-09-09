@@ -1,4 +1,6 @@
 #include <sqlite3.h>
+#include <iostream>
+#include <sstream>
 #include <unistd.h>
 #include "database.h"
 #include "configuration.h"
@@ -52,7 +54,8 @@ bool SqLight::Close(){
 	if( rc ) {
 	  posDebug( "Can't close database: %s\n", sqlite3_errmsg(db));
 	} else {
-	  posDebug( "closed database successfully: %s\n", sqlite3_errmsg(db));
+	  //posDebug( "closed database successfully: %s\n", sqlite3_errmsg(db));
+	  posDebug( "closed database successfully:\n");
 	}
 	return (rc?false:true);
 }
@@ -64,8 +67,13 @@ int SqLight::callback(void *data, int argc, char **argv, char **azColName) {
 	Row *row = new Row;
 
 	for(i = 0; i<argc; i++) {
-		//posDebug("%s = %s\n", azColName[i], argv[i] ? argv[i] : "NULL");
-		(*row)[azColName[i]]=argv[i] ? argv[i] : "NULL";
+		std::stringstream col;
+		std::stringstream val;
+		col<<azColName[i];
+		//col<<i<<"#"<<azColName[i];
+		val<<argv[i];
+		posDebug("%s=%s:%lu\n", col.str().c_str(), val.str().c_str(), val.str().size() );
+		(*row)[col.str()]=(val.str().size()) ? val.str() : "NULL";
 	}
 	results->push_back(row);
 

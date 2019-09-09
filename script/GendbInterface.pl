@@ -80,44 +80,51 @@ foreach my $var (@vars){
 	}
 	if($var ne "id"){
 		$constructParamStr.=$varTypes{$var}." ".$var."_";
-		$constructAssignStr.="$var=$var"."_;";
+		$constructAssignStr.="Set$var($var"."_);";
 	}
 }
-$getMapStr="char str[128];";
+$getMapStr="";
 foreach my $var (@vars){
-	if($varTypes{$var} =~ m/std::string/){
-		$getMapStr.="".'hashmap["'.$var.'"]='.$var.";";
-	}elsif($varTypes{$var} =~ m/long/){
-		$getMapStr.="".'sprintf(str,"%ld",'.$var.");";
-		$getMapStr.="".'hashmap["'.$var."\"]=str;";
-	}elsif($varTypes{$var} =~ m/double/){
-		$getMapStr.="".'sprintf(str,"%lf",'.$var.");";
-		$getMapStr.="".'hashmap["'.$var."\"]=str;";
-	}
+	$getMapStr.="".'hashmap["'.$var.'"]=Get("'.$var.'");';
 }
 #print Dumper $getMapStr;
 
 
 $setMapStr="";
 foreach my $var (@vars){
-	if($varTypes{$var} =~ m/std::string/){
-		$setMapStr.="".$var.' = hashmap["'.$var.'"]'.";";
-	}elsif($varTypes{$var} =~ m/long/){
-		$setMapStr.="".$var.' = atol(hashmap["'.$var."\"].c_str());";
-	}elsif($varTypes{$var} =~ m/double/){
-		$setMapStr.="".$var.' = atof(hashmap["'.$var."\"].c_str());";
-	}
+	$setMapStr.='Set("'.$var.'", hashmap["'.$var.'"]'.");";
 }
 #print Dumper $setMapStr;
 
 $accessMethodStr="";
 foreach my $var (@vars){
 	if($var ne "id"){
-		$accessMethodStr .= "\t\t"."$varTypes{$var} Get$var() const {return $var;}\n";
-		$accessMethodStr .= "\t\t"."void Set$var($varTypes{$var} variable_) {$var=variable_;}\n";
+		if($varTypes{$var} =~ m/std::string/){
+			$accessMethodStr .= "\t\t"."$varTypes{$var} Get$var() const {return Get(\"$var\");}\n";
+			$accessMethodStr .= "\t\t"."void Set$var($varTypes{$var} variable_) {Set(\"$var\",variable_);}\n";
+		}elsif($varTypes{$var} =~ m/long/){
+			$accessMethodStr .= "\t\t"."$varTypes{$var} Get$var() const {return atol(Get(\"$var\").c_str());}\n";
+			$accessMethodStr .= "\t\t"."void Set$var($varTypes{$var} variable_) {Set(\"$var\",toString(variable_));}\n";
+		}elsif($varTypes{$var} =~ m/double/){
+			$accessMethodStr .= "\t\t"."$varTypes{$var} Get$var() const {return atof(Get(\"$var\").c_str());}\n";
+			$accessMethodStr .= "\t\t"."void Set$var($varTypes{$var} variable_) {Set(\"$var\",toString(variable_));}\n";
+		}
 	}
 }
 #print Dumper $accessMethodStr;
+$accessMethodStaticStr="";
+foreach my $var (@vars){
+		if($varTypes{$var} =~ m/std::string/){
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap& x) {return x.Get(\"$var\");}\n";
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap* x) {return x->Get(\"$var\");}\n";
+		}elsif($varTypes{$var} =~ m/long/){
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap& x) {return atol(x.Get(\"$var\").c_str());}\n";
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap* x) {return atol(x->Get(\"$var\").c_str());}\n";
+		}elsif($varTypes{$var} =~ m/double/){
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap& x) {return atof(x.Get(\"$var\").c_str());}\n";
+			$accessMethodStaticStr .= "\t\t"."static $varTypes{$var} Get$var(ObjectMap* x) {return atof(x->Get(\"$var\").c_str());}\n";
+		}
+}
 
 $codeStr = <<"END";
 #ifndef _$classname\_H_
@@ -127,21 +134,25 @@ $codeStr = <<"END";
 namespace PlusORM {
 	class $classname :public ObjectMap {
 		private:
-		$featureStr
 		public:
-		inline static void Initialize(unsigned long maxid){ObjectMap::Initialize(GetTableName(),maxid);}
-		inline static std::string GetTableName() { return "$classname";	};
-		inline static std::string GetPrimaryKeyString() { return "id"; }
-		inline static void CreateTable(std::map<std::string,std::string> &hashmap){$hashStr}
+		static void Initialize(){ORM* model=ORM::GetInstance(); std::map<std::string,std::string> hashmap; CreateTable(hashmap); model->Create(GetTableName(), hashmap); unsigned long maxid = model->MaxPrimaryKey(GetTableName(),GetPrimaryKey()); ObjectMap::Initialize(GetTableName(),maxid);}
+		static std::string GetTableName() { return "$classname";	};
+		static std::string GetPrimaryKey() { return "id"; }
+		static void CreateTable(std::map<std::string,std::string> &hashmap){$hashStr}
+$accessMethodStaticStr
+
 		$classname():ObjectMap(GetTableName()) {}
 		$classname($constructParamStr):ObjectMap(GetTableName()){$constructAssignStr}
-		$classname(std::map<std::string,std::string> &hashmap ):ObjectMap(GetTableName()){SetMap(hashmap);}
-		$classname($classname& x):ObjectMap(x){$assignStr}
-		$classname& operator= ($classname& x) {ObjectMap::operator=(x);$assignStr return *this;}
-		inline void SetMap(std::map<std::string,std::string> &hashmap ){$setMapStr}
-		inline void GetMap(std::map<std::string,std::string> &hashmap ) const {$getMapStr}
-		unsigned long GetId() const {return id;}
-		void SetId(unsigned long variable_) {id=variable_;}
+		$classname(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
+		$classname($classname& x):ObjectMap(x){}
+		$classname(ObjectMap& x):ObjectMap(x){}
+		$classname& operator= ($classname& x) {ObjectMap::operator=(x); return *this;}
+		std::string GetTableNameString() const { return "$classname";	};
+		std::string GetPrimaryKeyString() const { return "id"; }
+		void SetMap(std::map<std::string,std::string> &hashmap ){$setMapStr}
+		void GetMap(std::map<std::string,std::string> &hashmap ) const {$getMapStr}
+		unsigned long GetId() const {return atol(Get("id").c_str());}
+		void SetId(unsigned long variable_) {Set("id",toString(variable_));}
 $accessMethodStr
 	};
 };

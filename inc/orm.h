@@ -41,10 +41,8 @@ namespace PlusORM {
 		virtual void GetMap(std::map<std::string,std::string> &hashmap ) const {hashmap.insert(obj.begin(),obj.end());};
 		
 		std::string GetPrimaryValueString() const { return Get("id");/*toString<unsigned long>(id);*/ }
-		std::string Get(const std::string& key) const {
-			std::map<std::string,std::string>::const_iterator it = obj.find(key);
-			return ((it!=obj.end())?it->second:"NULL");
-		}
+		std::string Get(const std::string& key) const { std::map<std::string,std::string>::const_iterator it = obj.find(key); return ((it!=obj.end())?it->second:"NULL"); }
+		void Set(const std::string& key,const std::string& value) {	obj[key]=value;	}
 
 		static void Initialize(const std::string& tableName,unsigned long maxid);
 	};

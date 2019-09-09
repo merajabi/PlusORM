@@ -12,7 +12,8 @@
 #endif 
 
 #ifndef posDebug
-		#define posDebug(args...) MyPosDebug(args)
+//		#define posDebug(args...) MyPosDebug(args)
+		#define posDebug(args...) printf(args)
 #endif //#ifndef debugf
 
 #ifdef __cplusplus
