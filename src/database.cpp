@@ -23,8 +23,9 @@ DatabaseAbstract* DBFactory::Connect(){
 	return db;
 }
 void DBFactory::Disconnect(DatabaseAbstract* db){
-	if(db)
+	if(db){
 		delete db;
+	}
 }
 
 bool SqLight::Open(){

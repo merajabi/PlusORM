@@ -15,6 +15,9 @@ int main(int argc, char **argv) {
 		Person john ("John", "Black", 33);                 // Create new Person object
 		model->Insert(john);                             // Insert object in DB
 
+		Person Jenni ("Jenni", "White", 23);                 // Create new Person object
+		model->Insert(Jenni);                             // Insert object in DB
+
 		Book b1 ("John Biography", john.GetId(), 2017);                 // Create new Person object
 		model->Insert(b1);                             // Insert object in DB
 
@@ -33,15 +36,18 @@ int main(int argc, char **argv) {
 		Person::Initialize();      // Initialize Person (sync with db)
 		Book::Initialize();
 
-		model->Search(Person::GetTableName(),"*","1 = 0; SELECT 'Person' as Person, a.*, 'Book' as Book, b.* FROM Person as a JOIN Book as b ON a.id = b.Author;");					 // Search persons with Age > 30
+		//model->Search(Person::GetTableName(),"*","1 = 0; SELECT 'Person' as Person, a.*, 'Book' as Book, b.* FROM Person as a JOIN Book as b ON a.id = b.Author;");					 // Search persons with Age > 30
+
+		model->Join(Person::GetTableName(),"Id",Book::GetTableName(),"Author","LEFT",false);					 // Search persons with Age > 30
+
 		const std::list<ObjectMap*> list=model->GetResultList();
 		for(std::list<ObjectMap*>::const_iterator it=list.begin(); it != list.end(); ++it){
 			std::cout << Person::GetId(*it) << "\t" << Person::GetFirst(*it) << "\t" << Person::GetLast(*it) << "\t" << Person::GetAge (*it) << std::endl;
 			std::cout << Book::GetId(*it) << "\t" << Book::GetName(*it) << "\t" << Book::GetAuthor(*it) << "\t" << Book::GetYear (*it) << std::endl;
 		}
 
-		model->Drop(Person::GetTableName());                                   // Drom Person table in DB, if you wish
-		model->Drop(Book::GetTableName());                                   // Drom Person table in DB, if you wish
+		//model->Drop(Person::GetTableName());                                   // Drom Person table in DB, if you wish
+		//model->Drop(Book::GetTableName());                                   // Drom Person table in DB, if you wish
 	}
 
 	ORM::RemoveInstance();                   // Remove ORM instance, just at the end of program.

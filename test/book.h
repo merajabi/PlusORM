@@ -12,7 +12,7 @@ namespace PlusORM {
 		static std::string GenKey(const std::string& key) {return (GetTableName()+"#"+key);}
 		static std::string ExtKey(const std::string& key) {std::size_t found = key.find(GetTableName()+"#"); if(found!=std::string::npos){ return key.substr(found+GetTableName().size()+1);}	return key; }		
 
-		static void CreateTable(std::map<std::string,std::string> &hashmap){hashmap["Id"]= "  INTEGER PRIMARY KEY NOT NULL ";hashmap["Name"]= "  VARCHAR(128) NOT NULL ";hashmap["Author"]= "  INTEGER NOT NULL ";hashmap["Year"]= "  INTEGER ";}
+		static void CreateTable(std::map<std::string,std::string> &hashmap){hashmap["Id"]= "  INTEGER PRIMARY KEY NOT NULL ";hashmap["Name"]= "  VARCHAR(128) ";hashmap["Author"]= "  INTEGER ";hashmap["Year"]= "  INTEGER ";}
 		static long GetId(ObjectMap& x) {return atol(x.Get(GenKey("Id")).c_str());}
 		static long GetId(ObjectMap* x) {return atol(x->Get(GenKey("Id")).c_str());}
 		static std::string GetName(ObjectMap& x) {return x.Get(GenKey("Name"));}
@@ -23,8 +23,8 @@ namespace PlusORM {
 		static long GetYear(ObjectMap* x) {return atol(x->Get(GenKey("Year")).c_str());}
 
 
-		Book():ObjectMap(GetTableName()) {SetId(GetMaxId(GetTableName()));}
-		Book(std::string Name_,long Author_,long Year_):ObjectMap(GetTableName()){SetId(GetMaxId(GetTableName()));SetName(Name_);SetAuthor(Author_);SetYear(Year_);}
+		Book():ObjectMap(GetTableName()) {SetId(GetMaxPrimaryKey(GetTableName()));}
+		Book(std::string Name_,long Author_,long Year_):ObjectMap(GetTableName()){SetId(GetMaxPrimaryKey(GetTableName()));SetName(Name_);SetAuthor(Author_);SetYear(Year_);}
 		Book(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
 		Book(Book& x):ObjectMap(x){}
 		Book(ObjectMap& x):ObjectMap(x){}

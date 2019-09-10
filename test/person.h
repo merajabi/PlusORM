@@ -23,8 +23,8 @@ namespace PlusORM {
 		static long GetAge(ObjectMap* x) {return atol(x->Get(GenKey("Age")).c_str());}
 
 
-		Person():ObjectMap(GetTableName()) {SetId(GetMaxId(GetTableName()));}
-		Person(std::string First_,std::string Last_,long Age_):ObjectMap(GetTableName()){SetId(GetMaxId(GetTableName()));SetFirst(First_);SetLast(Last_);SetAge(Age_);}
+		Person():ObjectMap(GetTableName()) {SetId(GetMaxPrimaryKey(GetTableName()));}
+		Person(std::string First_,std::string Last_,long Age_):ObjectMap(GetTableName()){SetId(GetMaxPrimaryKey(GetTableName()));SetFirst(First_);SetLast(Last_);SetAge(Age_);}
 		Person(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
 		Person(Person& x):ObjectMap(x){}
 		Person(ObjectMap& x):ObjectMap(x){}

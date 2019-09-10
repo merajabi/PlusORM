@@ -3,6 +3,7 @@
 use Data::Dumper;
 
 my $classname;
+my $PK; # primaryKey
 my %varString;
 my %varTypes;
 my @vars;
@@ -43,16 +44,20 @@ while (my $line = <STDIN>) {
 			$varTypes{$var} = 'std::string';
 		}
 
+		if($varString{$var} =~ m/PRIMARY KEY/i ){
+			$PK=$var;
+		}
 	}
 };
 
+#print Dumper $PK;
 #print Dumper $classname;
 #print Dumper \%varString;
 #my @vars= sort{$a cmp $b} keys %varTypes;
 
 $featureStr="";
 foreach my $var (@vars){
-	if($var ne "Id"){
+	if($var ne $PK){
 		$featureStr.="".$varTypes{$var}." ".$var.";";
 	}
 }
@@ -66,7 +71,7 @@ foreach my $var (@vars){
 
 $assignStr="";
 foreach my $var (@vars){
-	if($var ne "Id"){
+	if($var ne $PK){
 		$assignStr.=""."$var=x.$var;";
 	}
 }
@@ -78,7 +83,7 @@ foreach my $var (@vars){
 	if($constructParamStr){
 		$constructParamStr.=",";
 	}
-	if($var ne "Id"){
+	if($var ne $PK){
 		$constructParamStr.=$varTypes{$var}." ".$var."_";
 		$constructAssignStr.="Set$var($var"."_);";
 	}
@@ -135,22 +140,22 @@ namespace PlusORM {
 		public:
 		static void Initialize(){ORM* model=ORM::GetInstance(); std::map<std::string,std::string> hashmap; CreateTable(hashmap); model->Create(GetTableName(), hashmap); unsigned long maxid = model->MaxPrimaryKey(GetTableName(),GetPrimaryKey()); ObjectMap::Initialize(GetTableName(),maxid);}
 		static std::string GetTableName() { return "$classname";	};
-		static std::string GetPrimaryKey() { return "Id"; }
+		static std::string GetPrimaryKey() { return "$PK"; }
 		static std::string GenKey(const std::string& key) {return (GetTableName()+"#"+key);}
 		static std::string ExtKey(const std::string& key) {std::size_t found = key.find(GetTableName()+"#"); if(found!=std::string::npos){ return key.substr(found+GetTableName().size()+1);}	return key; }		
 
 		static void CreateTable(std::map<std::string,std::string> &hashmap){$hashStr}
 $accessMethodStaticStr
 
-		$classname():ObjectMap(GetTableName()) {SetId(GetMaxId(GetTableName()));}
-		$classname($constructParamStr):ObjectMap(GetTableName()){SetId(GetMaxId(GetTableName()));$constructAssignStr}
+		$classname():ObjectMap(GetTableName()) {Set$PK(GetMaxPrimaryKey(GetTableName()));}
+		$classname($constructParamStr):ObjectMap(GetTableName()){Set$PK(GetMaxPrimaryKey(GetTableName()));$constructAssignStr}
 		$classname(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
 		$classname($classname& x):ObjectMap(x){}
 		$classname(ObjectMap& x):ObjectMap(x){}
 		$classname& operator= ($classname& x) {ObjectMap::operator=(x); return *this;}
 		std::string GetTableNameString() const { return "$classname";	};
-		std::string GetPrimaryKeyString() const { return "Id"; }
-		std::string GetPrimaryValueString() const { return Get(GenKey("Id"));}
+		std::string GetPrimaryKeyString() const { return "$PK"; }
+		std::string GetPrimaryValueString() const { return Get(GenKey("$PK"));}
 		void SetMap(std::map<std::string,std::string> &hashmap ){$setMapStr}
 		void GetMap(std::map<std::string,std::string> &hashmap ) const {$getMapStr}
 $accessMethodStr

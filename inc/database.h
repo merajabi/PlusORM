@@ -23,7 +23,9 @@ public:
 	virtual bool Create(std::string table, std::map<std::string,std::string>& hashmap)=0;
 	virtual bool Insert(std::string table, std::map<std::string,std::string>& hashmap)=0;
 	virtual bool Update(std::string table, std::map<std::string,std::string>& hashmap, std::string condition)=0;
+	virtual bool Query(const std::string& query, ResultSet& rows){return false;}
 	virtual bool Select(std::string table, std::string elements, std::string condition, ResultSet& rows )=0;
+	virtual bool Join(const std::string& table1,const std::string& key1,const std::string& table2, const std::string& key2,const std::string& joinType,bool null, ResultSet& rows){return false;};
 	virtual bool Remove(std::string table, std::string condition)=0;
 	virtual bool Drop(std::string table)=0;
 	virtual ~DatabaseAbstract(){}
@@ -102,11 +104,26 @@ public:
 		std::string query = "DELETE FROM `" + table + "` WHERE "+condition;
 		return Do(query.c_str());
 	}
-	bool Select(std::string table, std::string elements, std::string condition, ResultSet& rows){
-		std::string query = "SELECT " + elements + " FROM `" + table + "` WHERE "+condition;
+	bool Query(const std::string& query, ResultSet& rows){
 		return Do(query.c_str(),&rows);
 	}
-
+	bool Select(std::string table, std::string elements, std::string condition, ResultSet& rows){
+		std::string query = "SELECT '"+table+"' as "+table+", "+ elements + " FROM `" + table + "` WHERE "+condition;
+		return Do(query.c_str(),&rows);
+	}
+	bool Join(const std::string& table1,const std::string& key1,const std::string& table2, const std::string& key2,const std::string& joinType,bool exclude, ResultSet& rows){
+		std::string query = "SELECT '"+table1+"' as "+table1+", a.*, '"+table2+"' as "+table2+", b.* FROM "+table1+" as a "+joinType+" JOIN "+table2+" as b ON a."+key1+" = b."+key2;
+		if(exclude){
+			if(joinType=="LEFT"){
+				query += " WHERE b."+key2+" IS NULL";
+			}else if (joinType=="RIGHT"){
+				query += " WHERE a."+key1+" IS NULL";
+			}else if (joinType=="FULL OUTER"){
+				query += " WHERE a."+key1+" IS NULL OR b."+key2+" IS NULL";
+			}
+		}
+		return Do(query.c_str(),&rows);
+	}
 	bool Drop(std::string table) {
 		std::string query = "DROP TABLE `" + table + "`";
 		return Do(query.c_str());
