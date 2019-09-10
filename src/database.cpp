@@ -65,15 +65,18 @@ int SqLight::callback(void *data, int argc, char **argv, char **azColName) {
 	posDebug("SqLight::callback numcolls: %d\n",argc);
 	ResultSet* results=(ResultSet*)data;
 	Row *row = new Row;
-
+	std::string tableName;
 	for(i = 0; i<argc; i++) {
 		std::stringstream col;
 		std::stringstream val;
 		col<<azColName[i];
 		//col<<i<<"#"<<azColName[i];
 		val<<argv[i];
-		posDebug("%s=%s:%lu\n", col.str().c_str(), val.str().c_str(), val.str().size() );
-		(*row)[col.str()]=(val.str().size()) ? val.str() : "NULL";
+		if(col.str()==val.str()){
+			tableName=val.str()+"#";
+		}
+		posDebug("%s=%s:%lu\n", (tableName+col.str()).c_str(), val.str().c_str(), val.str().size() );
+		(*row)[tableName+col.str()]=(val.str().size()) ? val.str() : "NULL";
 	}
 	results->push_back(row);
 

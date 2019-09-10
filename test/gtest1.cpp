@@ -53,7 +53,7 @@ namespace {
 			EXPECT_EQ(list.size(),1ul);
 			for(std::list<ObjectMap*>::const_iterator itl=list.begin(); itl != list.end(); itl++){
 				Person ptr(*(*itl));
-				EXPECT_EQ(ptr.GetId (),1ul);
+				EXPECT_EQ(ptr.GetId (),1l);
 				EXPECT_EQ(ptr.GetFirst(),"John");
 				EXPECT_EQ(ptr.GetLast(), "Doe");
 				EXPECT_EQ(ptr.GetAge (), 33);
@@ -67,12 +67,12 @@ namespace {
 			for(std::list<ObjectMap*>::const_iterator itl=list.begin(); itl != list.end(); itl++){
 				Person ptr(*(*itl));
 				if(itl==list.begin()){
-					EXPECT_EQ(ptr.GetId (),1ul);
+					EXPECT_EQ(ptr.GetId (),1l);
 					EXPECT_EQ(ptr.GetFirst(),"John");
 					EXPECT_EQ(ptr.GetLast(), "Doe");
 					EXPECT_EQ(ptr.GetAge (), 33);
 				}else{
-					EXPECT_EQ(ptr.GetId (),2ul);
+					EXPECT_EQ(ptr.GetId (),2l);
 					EXPECT_EQ(ptr.GetFirst(),"Jane");
 					EXPECT_EQ(ptr.GetLast(), "Doe");
 					EXPECT_EQ(ptr.GetAge (), 32);
@@ -85,7 +85,7 @@ namespace {
 			EXPECT_EQ(list.size(),1ul);
 			for(std::list<ObjectMap*>::const_iterator itl=list.begin(); itl != list.end(); itl++){
 				Person ptr(*(*itl));
-				EXPECT_EQ(ptr.GetId (),3ul);
+				EXPECT_EQ(ptr.GetId (),3l);
 				EXPECT_EQ(ptr.GetFirst(),"Joe");
 				EXPECT_EQ(ptr.GetLast(), "Dirt");
 				EXPECT_EQ(ptr.GetAge (), 30);
@@ -97,7 +97,7 @@ namespace {
 			EXPECT_EQ(list.size(),1ul);
 			for(std::list<ObjectMap*>::const_iterator itl=list.begin(); itl != list.end(); itl++){
 				Person ptr(*(*itl));
-				EXPECT_EQ(ptr.GetId (),3ul);
+				EXPECT_EQ(ptr.GetId (),3l);
 				EXPECT_EQ(ptr.GetFirst(),"Joe");
 				EXPECT_EQ(ptr.GetLast(), "Dirt");
 				EXPECT_EQ(ptr.GetAge (), 30);

@@ -25,26 +25,27 @@ namespace PlusORM {
 	public:
 		//ObjectMap(){id=0;}
 		ObjectMap(const ObjectMap& x);
-		ObjectMap(unsigned long xid);
+		//ObjectMap(unsigned long xid);
 		ObjectMap(const std::string& tableName);
 		ObjectMap(std::map<std::string,std::string> &hashmap );
 		virtual ~ObjectMap(){};
 
 		ObjectMap& operator= (const ObjectMap& x);
 		//ObjectMap& operator= (unsigned long xid);
-		ObjectMap& operator= (const std::string& tableName);
+		//ObjectMap& operator= (const std::string& tableName);
 
-		virtual std::string GetTableNameString() const {return "";};
-		virtual std::string GetPrimaryKeyString() const {return "";};
+		virtual std::string GetTableNameString() const {return "ObjectMapTable";};
+		virtual std::string GetPrimaryKeyString() const {return "ObjectMapPrimaryKey";};
+		virtual std::string GetPrimaryValueString() const { return "ObjectMapPrimaryValue";}
 
 		virtual void SetMap(std::map<std::string,std::string> &hashmap ) {obj.insert(hashmap.begin(),hashmap.end());} ;
 		virtual void GetMap(std::map<std::string,std::string> &hashmap ) const {hashmap.insert(obj.begin(),obj.end());};
-		
-		std::string GetPrimaryValueString() const { return Get("id");/*toString<unsigned long>(id);*/ }
+
 		std::string Get(const std::string& key) const { std::map<std::string,std::string>::const_iterator it = obj.find(key); return ((it!=obj.end())?it->second:"NULL"); }
 		void Set(const std::string& key,const std::string& value) {	obj[key]=value;	}
 
 		static void Initialize(const std::string& tableName,unsigned long maxid);
+		static unsigned long GetMaxId(const std::string& tableName){return tableMap[tableName];}
 	};
 
 	class ORM {
@@ -177,7 +178,7 @@ namespace PlusORM {
 	bool ORM::Search(const std::string& tableName, const std::string& elements, const std::string& condition){
 		bool ret=false;
 		ResultSet rows;
-		ret = db->Select(tableName,elements,condition,rows);
+		ret = db->Select(tableName,"'"+tableName+"' as "+tableName+", "+elements,condition,rows);
 		ClearResultList();
 		for(ResultSet::iterator itl=rows.begin(); itl != rows.end(); itl++){
 			Row* row = *itl;
