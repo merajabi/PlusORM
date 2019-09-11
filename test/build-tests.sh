@@ -40,3 +40,5 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test1.cpp -o test1
 
 g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test2.cpp -o test2.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
 
+g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test3.cpp -o test3.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
+

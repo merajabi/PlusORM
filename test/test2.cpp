@@ -6,7 +6,7 @@
 using namespace PlusORM;
 
 int main(int argc, char **argv) {
-
+/*
 	{
 		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
 		Person::Initialize();      // Initialize Person (sync with db)
@@ -31,12 +31,14 @@ int main(int argc, char **argv) {
 		model->Update(b1);                             // Update the DB
 
 	}
+*/
+/*
 	{
 		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
 		Person::Initialize();      // Initialize Person (sync with db)
 		Book::Initialize();
 
-		//model->Search(Person::GetTableName(),"*","1 = 0; SELECT 'Person' as Person, a.*, 'Book' as Book, b.* FROM Person as a JOIN Book as b ON a.id = b.Author;");					 // Search persons with Age > 30
+		//model->Search(Person::GetTableName(),"*","1 = 0;);					 // Search persons with Age > 30
 
 		model->Join(Person::GetTableName(),"Id",Book::GetTableName(),"Author","LEFT",false);					 // Search persons with Age > 30
 
@@ -48,6 +50,20 @@ int main(int argc, char **argv) {
 
 		//model->Drop(Person::GetTableName());                                   // Drom Person table in DB, if you wish
 		//model->Drop(Book::GetTableName());                                   // Drom Person table in DB, if you wish
+	}
+*/
+	{
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
+		Person::Initialize();      // Initialize Person (sync with db)
+		Book::Initialize();
+
+		model->Search(Book::GetTableName(),"*");					 // Search persons with Age > 30
+
+		const std::list<ObjectMap*> list=model->GetResultList();
+		for(std::list<ObjectMap*>::const_iterator it=list.begin(); it != list.end(); ++it){
+			std::cout << Book::GetId(*it) << "\t" << Book::GetName(*it) << "\t" << Book::GetAuthor(*it) << "\t" << Book::GetYear (*it) << std::endl;
+		}
+
 	}
 
 	ORM::RemoveInstance();                   // Remove ORM instance, just at the end of program.
