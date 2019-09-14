@@ -25,6 +25,7 @@ ObjectMap::ObjectMap(const ObjectMap& x):obj(x.obj.begin(),x.obj.end()){
 
 ObjectMap& ObjectMap::operator= (const ObjectMap& x) {
 	//id=x.id;
+	assert( obj.size() == 0 );
 	obj.insert(x.obj.begin(),x.obj.end());
 	return *this;
 }
@@ -109,6 +110,20 @@ bool ORM::Insert(std::list<ObjectMap*>& list){
 	bool ret=false;
 	for(typename std::list<ObjectMap*>::iterator it=list.begin(); it != list.end(); it++){
 		ret=Insert(*(*it));
+	}
+	return ret;
+}
+bool ORM::Sync(ObjectMap& x){
+	bool ret=false;
+	ResultSet rows;
+	std::string condition=x.GetPrimaryKeyString() + " = " + x.GetPrimaryValueString();
+	ret = db->Select(x.GetTableNameString(),"*",condition,rows);
+	if(rows.size()){
+		if( x.GetPrimaryValueString() == (*(*rows.begin()))[x.GenKeyString(x.GetPrimaryKeyString())] ){
+			x.ClearMap();
+			x.SetMap(*(*rows.begin()));
+			ret=true;
+		}
 	}
 	return ret;
 }

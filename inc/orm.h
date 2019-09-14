@@ -5,6 +5,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <string>
+#include <iostream>
 #include <map>
 #include <list>
 
@@ -36,13 +37,20 @@ namespace PlusORM {
 
 		virtual std::string GetTableNameString() const {return "ObjectMapTable";};
 		virtual std::string GetPrimaryKeyString() const {return "ObjectMapPrimaryKey";};
-		virtual std::string GetPrimaryValueString() const { return "ObjectMapPrimaryValue";}
+		std::string GetPrimaryValueString() const { return Get(GenKeyString(GetPrimaryKeyString()));}
+		std::string GenKeyString(const std::string& key) const {return (GetTableNameString()+"#"+key);}
 
+		void ClearMap() {obj.clear();} ;
 		virtual void SetMap(std::map<std::string,std::string> &hashmap ) {obj.insert(hashmap.begin(),hashmap.end());} ;
 		virtual void GetMap(std::map<std::string,std::string> &hashmap ) const {hashmap.insert(obj.begin(),obj.end());};
 
 		std::string Get(const std::string& key) const { std::map<std::string,std::string>::const_iterator it = obj.find(key); return ((it!=obj.end())?it->second:"NULL"); }
 		void Set(const std::string& key,const std::string& value) {	obj[key]=value;	}
+		void Print(){
+			for(std::map<std::string,std::string>::iterator it=obj.begin(); it != obj.end(); it++){
+				std::cout<<"key: "<<it->first<<" value: "<<it->second<<std::endl;
+			}
+		}
 
 		static void Initialize(const std::string& tableName,unsigned long maxid);
 		static unsigned long GetMaxPrimaryKey(const std::string& tableName){return tableMap[tableName];}
@@ -67,6 +75,7 @@ namespace PlusORM {
 		bool Query(const std::string& query);
 		bool Search(const std::string& tableName,const std::string& elements="*", const std::string& condition = "1==1");
 		bool Join(const std::string& table1,const std::string& key1,const std::string& table2, const std::string& key2,const std::string& joinType="INNER",bool exclude=false);
+		bool Sync(ObjectMap& x);
 		bool Update(const ObjectMap& x);
 		bool Update(std::list<ObjectMap*>& list);
 		bool Remove(const ObjectMap& x);

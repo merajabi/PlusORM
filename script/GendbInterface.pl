@@ -97,7 +97,7 @@ foreach my $var (@vars){
 
 $setMapStr="";
 foreach my $var (@vars){
-	$setMapStr.='Set(GenKey("'.$var.'"), hashmap["'.$var.'"]'.");";
+	$setMapStr.='Set(GenKey("'.$var.'"), hashmap[GenKey("'.$var.'")]'.");";
 }
 #print Dumper $setMapStr;
 
@@ -147,15 +147,14 @@ namespace PlusORM {
 		static void CreateTable(std::map<std::string,std::string> &hashmap){$hashStr}
 $accessMethodStaticStr
 
-		$classname():ObjectMap(GetTableName()) {Set$PK(GetMaxPrimaryKey(GetTableName()));}
+		$classname():ObjectMap() {}
 		$classname($constructParamStr):ObjectMap(GetTableName()){Set$PK(GetMaxPrimaryKey(GetTableName()));$constructAssignStr}
 		$classname(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
-		$classname($classname& x):ObjectMap(x){}
-		$classname(ObjectMap& x):ObjectMap(x){}
-		$classname& operator= ($classname& x) {ObjectMap::operator=(x); return *this;}
+		$classname(const $classname& x):ObjectMap(x){}
+		$classname(const ObjectMap& x):ObjectMap(x){}
+		$classname& operator= (const $classname& x) {ObjectMap::operator=(x); return *this;}
 		std::string GetTableNameString() const { return "$classname";	};
 		std::string GetPrimaryKeyString() const { return "$PK"; }
-		std::string GetPrimaryValueString() const { return Get(GenKey("$PK"));}
 		void SetMap(std::map<std::string,std::string> &hashmap ){$setMapStr}
 		void GetMap(std::map<std::string,std::string> &hashmap ) const {$getMapStr}
 $accessMethodStr

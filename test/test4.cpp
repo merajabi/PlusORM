@@ -27,7 +27,7 @@ int main() {
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		model->Insert(john);					// Insert object in DB
-		//ORM::RemoveInstance(); 
+		ORM::RemoveInstance(); 
 	}
 	for (int i=0;i<numTry;i++) {
 		std::vector<thread> tv;
@@ -37,7 +37,7 @@ int main() {
 		for(size_t j=0;j<tv.size();j++){
 			tv[j].join();
 		}
-		//ORM::RemoveInstance();
+		ORM::RemoveInstance();
 	}
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 

@@ -23,16 +23,15 @@ namespace PlusORM {
 		static long GetYear(ObjectMap* x) {return atol(x->Get(GenKey("Year")).c_str());}
 
 
-		Book():ObjectMap(GetTableName()) {SetId(GetMaxPrimaryKey(GetTableName()));}
+		Book():ObjectMap() {}
 		Book(std::string Name_,long Author_,long Year_):ObjectMap(GetTableName()){SetId(GetMaxPrimaryKey(GetTableName()));SetName(Name_);SetAuthor(Author_);SetYear(Year_);}
 		Book(std::map<std::string,std::string> &hashmap ):ObjectMap(hashmap){}
-		Book(Book& x):ObjectMap(x){}
-		Book(ObjectMap& x):ObjectMap(x){}
-		Book& operator= (Book& x) {ObjectMap::operator=(x); return *this;}
+		Book(const Book& x):ObjectMap(x){}
+		Book(const ObjectMap& x):ObjectMap(x){}
+		Book& operator= (const Book& x) {ObjectMap::operator=(x); return *this;}
 		std::string GetTableNameString() const { return "Book";	};
 		std::string GetPrimaryKeyString() const { return "Id"; }
-		std::string GetPrimaryValueString() const { return Get(GenKey("Id"));}
-		void SetMap(std::map<std::string,std::string> &hashmap ){Set(GenKey("Id"), hashmap["Id"]);Set(GenKey("Name"), hashmap["Name"]);Set(GenKey("Author"), hashmap["Author"]);Set(GenKey("Year"), hashmap["Year"]);}
+		void SetMap(std::map<std::string,std::string> &hashmap ){Set(GenKey("Id"), hashmap[GenKey("Id")]);Set(GenKey("Name"), hashmap[GenKey("Name")]);Set(GenKey("Author"), hashmap[GenKey("Author")]);Set(GenKey("Year"), hashmap[GenKey("Year")]);}
 		void GetMap(std::map<std::string,std::string> &hashmap ) const {hashmap["Id"]=Get(GenKey("Id"));hashmap["Name"]=Get(GenKey("Name"));hashmap["Author"]=Get(GenKey("Author"));hashmap["Year"]=Get(GenKey("Year"));}
 		long GetId() const {return atol(Get(GenKey("Id")).c_str());}
 		void SetId(long variable_) {Set(GenKey("Id"),toString(variable_));}
