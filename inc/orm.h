@@ -23,7 +23,7 @@ namespace PlusORM {
 		static std::map<std::string,unsigned long> tableMap;
 		//unsigned long id;
 	public:
-		//ObjectMap(){id=0;}
+		ObjectMap(){}	// No Increase to tableMap
 		ObjectMap(const ObjectMap& x);
 		//ObjectMap(unsigned long xid);
 		ObjectMap(const std::string& tableName);

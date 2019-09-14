@@ -7,19 +7,16 @@
 using namespace PlusORM;
 
 
-const int numTry=10;
-const int numThread=5;
+const int numTry=2;
+const int numThread=2;
 const long incAge=10;
 mutex m;
 
 void inc(Person& man){
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
-		for(long i=0;i<incAge;i++){				// it works like this so when we just write to database keeping object safe is enough
-			{
-				lock_guard<mutex> lk(m);
-				man.SetAge(man.GetAge()+1);		// change the Person object
-			}
-			model->Update(man);
+		std::string query="Update Person set age=age+1 where Id="+toString(man.GetId());
+		for(long i=0;i<incAge;i++){
+			model->Query(query);		// Sqlite compiled in theadsafe mode SQLITE_THREADSAFE=1
 		}
 }
 
@@ -30,7 +27,7 @@ int main() {
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		model->Insert(john);					// Insert object in DB
-		ORM::RemoveInstance(); 
+		//ORM::RemoveInstance(); 
 	}
 	for (int i=0;i<numTry;i++) {
 		std::vector<thread> tv;
@@ -40,7 +37,7 @@ int main() {
 		for(size_t j=0;j<tv.size();j++){
 			tv[j].join();
 		}
-		ORM::RemoveInstance();
+		//ORM::RemoveInstance();
 	}
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 

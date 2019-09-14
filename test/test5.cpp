@@ -12,30 +12,34 @@ const int numThread=5;
 const long incAge=10;
 mutex m;
 
-void inc(Person& man){
-		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
-		for(long i=0;i<incAge;i++){				// it works like this so when we just write to database keeping object safe is enough
-			{
-				lock_guard<mutex> lk(m);
-				man.SetAge(man.GetAge()+1);		// change the Person object
+void inc(void){
+		Person man;
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
+		{
+			lock_guard<mutex> lk(m);
+			model->Search(Person::GetTableName(),"*");
+			const std::list<ObjectMap*> list=model->GetResultList();
+			if(list.size()){
+				man=*(*list.begin());
 			}
-			model->Update(man);
 		}
+		man.SetAge(man.GetAge()+incAge);                                // change the Person object
+		model->Update(man);
 }
 
 int main() {
-	Person::Initialize();						// Initialize Person (sync with db)
+	Person::Initialize();      // Initialize Person (sync with db)
 	Person john ("John", "Black", 0);
 
 	{
-		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
-		model->Insert(john);					// Insert object in DB
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
+		model->Insert(john);                             // Insert object in DB
 		ORM::RemoveInstance(); 
 	}
 	for (int i=0;i<numTry;i++) {
 		std::vector<thread> tv;
 		for(int j=0;j<numThread;j++){
-			tv.push_back(thread(inc,ref(john)));
+			tv.push_back(thread(inc));
 		}
 		for(size_t j=0;j<tv.size();j++){
 			tv[j].join();
@@ -43,7 +47,7 @@ int main() {
 		ORM::RemoveInstance();
 	}
 	{
-		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
+		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
 		model->Search(Person::GetTableName(),"*");
 		const std::list<ObjectMap*> list=model->GetResultList();
 		if(list.size()){

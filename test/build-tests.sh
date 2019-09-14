@@ -21,8 +21,8 @@ fi
 #g++ -isystem /usr/include/libdrm -I. -I.. -I${GTEST_DIR}/include -g -O0 -Wall  -fPIC -c gtest1.cpp -o gtest1.o
 #g++ -g -O0 -Wall  -o test.d gtest1.o  -L. -L.. -Wl,-rpath,../ -Wl,--start-group -lorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
 
-../script/GendbInterface.pl < person.sql > person.h
-../script/GendbInterface.pl < book.sql > book.h
+#../script/GendbInterface.pl < person.sql > person.h
+#../script/GendbInterface.pl < book.sql > book.h
 g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 gtest1.cpp -o gtest1.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lutils -lsqlite3.24 -lplusorm -lgtest -lpthread -ldl  -Wl,--end-group
 
 #for Cygwin use this line
@@ -41,4 +41,8 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test1.cpp -o test1
 g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test2.cpp -o test2.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
 
 g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test3.cpp -o test3.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
+
+g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test4.cpp -o test4.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
+
+g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 test5.cpp -o test5.out -L. -L.. -Wl,-rpath,.:.. -Wl,--start-group -lplusorm -lutils -lsqlite3.24 -lgtest -lpthread -ldl  -Wl,--end-group
 

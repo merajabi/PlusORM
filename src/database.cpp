@@ -34,7 +34,7 @@ bool SqLight::Open(){
 	//int rc = sqlite3_open(dbName.c_str(),&db);
 	//int rc = sqlite3_open_v2(dbName.c_str(),&db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE ,NULL);
 
-	while(sqlite3_open_v2(dbName.c_str(),&db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE ,NULL)){
+	while(sqlite3_open_v2(dbName.c_str(),&db, SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_FULLMUTEX,NULL)){ //(SQLITE_THREADSAFE=2 SQLITE_OPEN_NOMUTEX) (SQLITE_THREADSAFE=1 SQLITE_OPEN_FULLMUTEX)
 		posDebug( "Can't open database:%s err: %s\n",dbName.c_str(), sqlite3_errmsg(db));
 		usleep(100);
 	}
@@ -46,7 +46,7 @@ bool SqLight::Open(){
 	}
 	return (rc?false:true);
 	*/
-	posDebug( "Opened database successfully:%s msg: %s\n",dbName.c_str(), sqlite3_errmsg(db));
+	posDebug( "Opened database successfully:%s msg: %s threadsafe:%d \n",dbName.c_str(), sqlite3_errmsg(db), sqlite3_threadsafe());
 	return true;
 }
 
