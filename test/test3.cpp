@@ -7,18 +7,16 @@
 using namespace PlusORM;
 
 
-const int numTry=10;
-const int numThread=5;
-const long incAge=10;
+const int numTry=5;
+const int numThread=4;
+const long incAge=20;
 mutex m;
 
 void inc(Person& man){
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		for(long i=0;i<incAge;i++){				// it works like this so when we just write to database keeping object safe is enough
-			{
-				lock_guard<mutex> lk(m);
-				man.SetAge(man.GetAge()+1);		// change the Person object
-			}
+			lock_guard<mutex> lk(m);
+			man.SetAge(man.GetAge()+1);		// change the Person object
 			model->Update(man);
 		}
 }
@@ -42,6 +40,7 @@ int main() {
 		}
 		ORM::RemoveInstance();
 	}
+	std::cout << john.GetId() << "\t" << john.GetFirst() << "\t" << john.GetLast() << "\t" << john.GetAge () << std::endl;
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		model->Search(Person::GetTableName(),"*");

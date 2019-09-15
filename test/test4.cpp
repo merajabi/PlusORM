@@ -7,16 +7,17 @@
 using namespace PlusORM;
 
 
-const int numTry=2;
-const int numThread=2;
-const long incAge=10;
+const int numTry=5;
+const int numThread=4;
+const long incAge=20;
 mutex m;
 
 void inc(Person& man){
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		std::string query="Update Person set age=age+1 where Id="+toString(man.GetId());
 		for(long i=0;i<incAge;i++){
-			model->Query(query);		// Sqlite compiled in theadsafe mode SQLITE_THREADSAFE=1
+			model->Query(query);		// No lock is needed! Sqlite compiled in theadsafe mode SQLITE_THREADSAFE=1
+			model->Sync(man);			// sync with db
 		}
 }
 
@@ -39,6 +40,7 @@ int main() {
 		}
 		ORM::RemoveInstance();
 	}
+	std::cout << john.GetId() << "\t" << john.GetFirst() << "\t" << john.GetLast() << "\t" << john.GetAge () << std::endl;
 	{
 		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
 		model->Search(Person::GetTableName(),"*");

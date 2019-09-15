@@ -6,33 +6,28 @@
 
 using namespace PlusORM;
 
-
-const int numTry=1;
-const int numThread=2;
-const long incAge=50;
+const int numTry=5;
+const int numThread=4;
+const long incAge=20;
 mutex m;
 
 void inc1(Person& man){
-		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
-		std::string query="Update Person set age=age+1 where Id="+toString(man.GetId());
-		for(long i=0;i<incAge;i++){
-			{
-				lock_guard<mutex> lk(m);
-				model->Query(query);		// Sqlite compiled in theadsafe mode SQLITE_THREADSAFE=1
-				model->Sync(man);
-			}
-		}
+	ORM* model = ORM::GetInstance();		// Get an instance of ORM 
+	std::string query="Update Person set age=age+1 where Id="+toString(man.GetId());
+	for(long i=0;i<incAge;i++){
+			lock_guard<mutex> lk(m);
+			model->Query(query);		// Sqlite compiled in theadsafe mode SQLITE_THREADSAFE=1
+			model->Sync(man);
+	}
 }
 
 void inc2(Person& man){
-		ORM* model = ORM::GetInstance();		// Get an instance of ORM 
-		for(long i=0;i<incAge;i++){				// it works like this so when we just write to database keeping object safe is enough
-			{
-				lock_guard<mutex> lk(m);
-				man.SetAge(man.GetAge()+1);		// change the Person object
-				model->Update(man);
-			}
-		}
+	ORM* model = ORM::GetInstance();		// Get an instance of ORM 
+	for(long i=0;i<incAge;i++){				// it works like this so when we just write to database keeping object safe is enough
+			lock_guard<mutex> lk(m);
+			man.SetAge(man.GetAge()+1);		// change the Person object
+			model->Update(man);
+	}
 }
 
 int main() {
@@ -55,6 +50,7 @@ int main() {
 		}
 		ORM::RemoveInstance();
 	}
+	std::cout << john.GetId() << "\t" << john.GetFirst() << "\t" << john.GetLast() << "\t" << john.GetAge () << std::endl;
 	{
 		ORM* model = ORM::GetInstance(); // Get an instance of ORM 
 		model->Search(Person::GetTableName(),"*","Id = "+toString(john.GetId()));
@@ -62,7 +58,6 @@ int main() {
 		if(list.size()){
 			std::list<ObjectMap*>::const_iterator it=list.begin();
 			std::cout << Person::GetId(*it) << "\t" << Person::GetFirst(*it) << "\t" << Person::GetLast(*it) << "\t" << Person::GetAge (*it) << std::endl;
-			std::cout << john.GetId() << "\t" << john.GetFirst() << "\t" << john.GetLast() << "\t" << john.GetAge () << std::endl;
 		}
 		model->Drop(Person::GetTableName()); 
 		ORM::RemoveInstance(); 
