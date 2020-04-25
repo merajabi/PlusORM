@@ -2,6 +2,8 @@
 liba/
 libso/
 temp/
+test/cov-report/
+
 # Prerequisites
 *.d
 *.db
@@ -39,6 +41,8 @@ temp/
 # Test Artifacts
 *.gcda
 *.gcno
+*.trace
+*.dsc
 
 # Reports
 *.xml

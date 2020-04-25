@@ -1,0 +1,5 @@
+Reading tracefile test/gtest1.trace
+Summary coverage rate:
+  lines......: 86.8% (289 of 333 lines)
+  functions..: 83.1% (98 of 118 functions)
+  branches...: no data found
