@@ -29,7 +29,7 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 gtest1.cpp -o gtes
 #cp ../*.so ./
 #g++ -I. -I.. -I${GTEST_DIR}/include -g -O0 -Wall -fPIC gtest1.cpp -o gtest1 -L/cygdrive/d/POS/orm -L. -L.. -Wl,-rpath,../ -Wl,--start-group libplusorm.so libutils.so libsqlite3.24.so libgtest.a -lpthread -ldl  -Wl,--end-group
 
-./gtest1.out
+./gtest1.out --gtest_output="xml:gtest1.xml"
 EXITCODE=$?
 
 exit $EXITCODE;
