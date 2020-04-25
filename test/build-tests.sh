@@ -51,5 +51,15 @@ lcov --remove gtest1.4.trace "$ROOTFOLDER/utils/*" --output-file gtest1.trace
 gendesc descriptions.txt -o descriptions.dsc
 genhtml gtest1.trace --output-directory cov-report --title "Basic example" --show-details --description-file descriptions.dsc $(FRAMES) --legend
 
+# lines
+    echo "##teamcity[buildStatisticValue key='CodeCoverageL' value='86.8']"
+    echo "##teamcity[buildStatisticValue key='CodeCoverageAbsLCovered' value='289']"
+    echo "##teamcity[buildStatisticValue key='CodeCoverageAbsLTotal' value='333']"
+
+# methods
+    echo "##teamcity[buildStatisticValue key='CodeCoverageM' value='83.1']"
+    echo "##teamcity[buildStatisticValue key='CodeCoverageAbsMCovered' value='98']"
+    echo "##teamcity[buildStatisticValue key='CodeCoverageAbsMTotal' value='118']"
+
 exit $EXITCODE;
 
