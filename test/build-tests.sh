@@ -1,5 +1,6 @@
-GTEST_DIR="../googletest/googletest";
-GMOCK_DIR="../googletest/googlemock";
+ROOTFOLDER=$1;
+GTEST_DIR="$ROOTFOLDER/googletest/googletest";
+GMOCK_DIR="$ROOTFOLDER/googletest/googlemock";
 EXITCODE=1
 
 # googletest 1.8.x is the last release supporting pre-C++11 compilers.
@@ -29,15 +30,15 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fprofile-arcs -ftest-coverage -fPI
 #cp ../*.so ./
 #g++ -I. -I.. -I${GTEST_DIR}/include -g -O0 -Wall -fPIC gtest1.cpp -o gtest1 -L/cygdrive/d/POS/orm -L. -L.. -Wl,-rpath,../ -Wl,--start-group libplusorm.so libutils.so libsqlite3.24.so libgtest.a -lpthread -ldl  -Wl,--end-group
 
-lcov --zerocounters --directory .
+lcov --zerocounters --directory $ROOTFOLDER
 ./gtest1.out --gtest_output="xml:gtest1.xml"
 EXITCODE=$?
-lcov --capture --directory . --output-file gtest1.0.trace --test-name gtest1 --external
+lcov --capture --directory $ROOTFOLDER --output-file gtest1.0.trace --test-name gtest1 --external
 lcov --remove gtest1.0.trace "/usr/include/*" --output-file gtest1.1.trace
-lcov --remove gtest1.1.trace "*/PlusORM/googletest/*" --output-file gtest1.2.trace
-lcov --remove gtest1.2.trace "*/PlusORM/ModernCPP/*" --output-file gtest1.3.trace
-lcov --remove gtest1.3.trace "*/PlusORM/sqlite3.24/*" --output-file gtest1.4.trace
-lcov --remove gtest1.4.trace "*/PlusORM/utils/*" --output-file gtest1.trace
+lcov --remove gtest1.1.trace "$ROOTFOLDER/googletest/*" --output-file gtest1.2.trace
+lcov --remove gtest1.2.trace "$ROOTFOLDER/ModernCPP/*" --output-file gtest1.3.trace
+lcov --remove gtest1.3.trace "$ROOTFOLDER/sqlite3.24/*" --output-file gtest1.4.trace
+lcov --remove gtest1.4.trace "$ROOTFOLDER/utils/*" --output-file gtest1.trace
 # valgrind -v --leak-check=full --show-leak-kinds=all test/gtest1
 # test/gtest1
 

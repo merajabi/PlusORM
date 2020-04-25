@@ -22,7 +22,7 @@ then
 elif [ "$TARGET" = "test" ]
 then
 	cd ./test
-	./build-tests.sh
+	./build-tests.sh $ROOTFOLDER
 	EXITCODE=$?
 	cd ..
 else
