@@ -1,5 +1,6 @@
 GTEST_DIR="../googletest/googletest";
 GMOCK_DIR="../googletest/googlemock";
+EXITCODE=1
 
 # googletest 1.8.x is the last release supporting pre-C++11 compilers.
 # cd googletest; git checkout 2fe3bd9 
@@ -29,6 +30,9 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fPIC -std=c++98 gtest1.cpp -o gtes
 #g++ -I. -I.. -I${GTEST_DIR}/include -g -O0 -Wall -fPIC gtest1.cpp -o gtest1 -L/cygdrive/d/POS/orm -L. -L.. -Wl,-rpath,../ -Wl,--start-group libplusorm.so libutils.so libsqlite3.24.so libgtest.a -lpthread -ldl  -Wl,--end-group
 
 ./gtest1.out
+EXITCODE=$?
+
+exit $EXITCODE;
 #valgrind -v --leak-check=full --show-leak-kinds=all test/gtest1
 #test/gtest1
 
