@@ -32,8 +32,12 @@ g++ -I. -I.. -I${GTEST_DIR}/include -g -Wall -fprofile-arcs -ftest-coverage -fPI
 lcov --zerocounters --directory .
 ./gtest1.out --gtest_output="xml:gtest1.xml"
 EXITCODE=$?
-lcov --capture --directory . --output-file trace.lcov --test-name gtest1 --no-external
-
+lcov --capture --directory . --output-file gtest1.0.trace --test-name gtest1 --external
+lcov --remove gtest1.0.trace "/usr/include/*" --output-file gtest1.1.trace
+lcov --remove gtest1.1.trace "*/PlusORM/googletest/*" --output-file gtest1.2.trace
+lcov --remove gtest1.2.trace "*/PlusORM/ModernCPP/*" --output-file gtest1.3.trace
+lcov --remove gtest1.3.trace "*/PlusORM/sqlite3.24/*" --output-file gtest1.4.trace
+lcov --remove gtest1.4.trace "*/PlusORM/utils/*" --output-file gtest1.trace
 # valgrind -v --leak-check=full --show-leak-kinds=all test/gtest1
 # test/gtest1
 
@@ -44,7 +48,7 @@ lcov --capture --directory . --output-file trace.lcov --test-name gtest1 --no-ex
 
 
 gendesc descriptions.txt -o descriptions.dsc
-genhtml trace.lcov --output-directory cov-report --title "Basic example" --show-details --description-file descriptions.dsc $(FRAMES) --legend
+genhtml gtest1.trace --output-directory cov-report --title "Basic example" --show-details --description-file descriptions.dsc $(FRAMES) --legend
 
 exit $EXITCODE;
 
