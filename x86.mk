@@ -8,7 +8,7 @@ SDKPATH			:=
 
 # Linker flags, also tell the linker to ignore functions that aren't used.
 LIBPATH			:= 
-LIBS			:= -lpthread -ldl
+LIBS			:= -lpthread -ldl -lgcov
 INCPATH 		:= -isystem /usr/include/libdrm
 
 # unix fs parms
@@ -32,7 +32,7 @@ LD				:= "$(ARCHPREFIX)g++"
 ARCHFLAGS 		:= 
 # -g -O0 -Wall
 # -Os -DNDEBUG
-OPTIMISATION 	:= -g -O0 -Wall
+OPTIMISATION 	:= -g -O0 -Wall -fprofile-arcs -ftest-coverage
 
 
 # Compiler flags

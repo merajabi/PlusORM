@@ -35,6 +35,11 @@ temp/
 *.exe
 *.out
 *.app
+
+# Test Artifacts
+*.gcda
+*.gcno
+
 # Reports
 *.xml
 

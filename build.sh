@@ -17,7 +17,8 @@ elif [ "$TARGET" = "clean" ]
 then
 	make cleanall MANAGER="$ROOTFOLDER/makefile.mk" BUILD="sqlite3.24" ;
 	EXITCODE=$?
-	rm test/*.so test/*.a test/*.o test/*.out
+	rm test/*.so test/*.a test/*.o test/*.db test/*.out test/*.gcda test/*.gcno test/*.lcov test/*.dsc test/*.xml
+	rm -r test/cov-report
 elif [ "$TARGET" = "test" ]
 then
 	cd ./test
